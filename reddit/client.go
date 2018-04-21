@@ -40,7 +40,7 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	metrics.Requests.WithLabelValues(fmt.Sprintf("%d", resp.StatusCode)).Inc()
+	metrics.Requests.WithLabelValues(req.URL.Path, fmt.Sprintf("%d", resp.StatusCode)).Inc()
 
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -63,7 +63,7 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	metrics.ResponseSize.Observe(float64(buf.Len()))
+	metrics.ResponseSize.WithLabelValues(req.URL.Path, fmt.Sprintf("%d", resp.StatusCode)).Observe(float64(buf.Len()))
 
 	return buf.Bytes(), nil
 }
