@@ -4,7 +4,7 @@
 
 package rsort
 
-import "github.com/turnage/graw/reddit"
+import "github.com/Rukenshia/graw/reddit"
 
 type commentsThingImpl struct {
 	e *reddit.Comment

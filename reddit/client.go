@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+
+	"github.com/Rukenshia/graw/metrics"
 )
 
 // tokenURL is the url of reddit's oauth2 authorization service.
@@ -38,6 +40,8 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
+	metrics.Requests.WithLabelValues(fmt.Sprintf("%d", resp.StatusCode)).Inc()
+
 	switch resp.StatusCode {
 	case http.StatusOK:
 	case http.StatusForbidden:
@@ -58,6 +62,8 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 	if _, err := buf.ReadFrom(resp.Body); err != nil {
 		return nil, err
 	}
+
+	metrics.ResponseSize.Observe(float64(buf.Len()))
 
 	return buf.Bytes(), nil
 }

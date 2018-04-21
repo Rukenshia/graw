@@ -43,3 +43,9 @@
 // bots, which can subscribe to logged-in event sources in the bot's account
 // inbox like mentions and private messages.
 package graw
+
+import "github.com/Rukenshia/graw/metrics"
+
+func init() {
+	metrics.Register()
+}
