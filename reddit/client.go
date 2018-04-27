@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Rukenshia/graw/metrics"
 	log "github.com/sirupsen/logrus"
@@ -42,6 +43,29 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 	}
 
 	metrics.Requests.WithLabelValues(req.URL.Path, fmt.Sprintf("%d", resp.StatusCode)).Inc()
+
+	used := resp.Header.Get("X-Ratelimit-Used")
+	remaining := resp.Header.Get("X-Ratelimit-Remaining")
+	reset := resp.Header.Get("X-Ratelimit-Reset")
+
+	if used != "" {
+		n, err := strconv.Atoi(used)
+		if err == nil {
+			metrics.RateLimitUsed.Set(float64(n))
+		}
+	}
+	if remaining != "" {
+		n, err := strconv.Atoi(used)
+		if err == nil {
+			metrics.RateLimitRemaining.Set(float64(n))
+		}
+	}
+	if reset != "" {
+		n, err := strconv.Atoi(used)
+		if err == nil {
+			metrics.RateLimitReset.Set(float64(n))
+		}
+	}
 
 	switch resp.StatusCode {
 	case http.StatusOK:
