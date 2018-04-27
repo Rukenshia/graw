@@ -55,13 +55,13 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 		}
 	}
 	if remaining != "" {
-		n, err := strconv.Atoi(used)
+		n, err := strconv.Atoi(remaining)
 		if err == nil {
 			metrics.RateLimitRemaining.Set(float64(n))
 		}
 	}
 	if reset != "" {
-		n, err := strconv.Atoi(used)
+		n, err := strconv.Atoi(reset)
 		if err == nil {
 			metrics.RateLimitReset.Set(float64(n))
 		}
