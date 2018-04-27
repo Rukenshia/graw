@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Rukenshia/graw/metrics"
+	log "github.com/sirupsen/logrus"
 )
 
 // tokenURL is the url of reddit's oauth2 authorization service.
@@ -62,6 +63,11 @@ func (b *baseClient) Do(req *http.Request) ([]byte, error) {
 	if _, err := buf.ReadFrom(resp.Body); err != nil {
 		return nil, err
 	}
+
+	log.WithFields(log.Fields{
+		"component": "graw",
+		"body":      buf.String(),
+	}).Debug("received response")
 
 	metrics.ResponseSize.WithLabelValues(req.URL.Path, fmt.Sprintf("%d", resp.StatusCode)).Observe(float64(buf.Len()))
 
